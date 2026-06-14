@@ -116,6 +116,46 @@ export function MediaView() {
 		}
 	};
 
+	// Musa picker: import each asset AND drop it onto the timeline (also stays in
+	// the Assets list, so it can be dragged again).
+	const importAndPlace = async ({ files }: { files: File[] }) => {
+		if (!files?.length || !activeProject) return;
+		setIsProcessing(true);
+		setProgress(0);
+		try {
+			const processed = await processMediaAssets({
+				files,
+				onProgress: (p: { progress: number }) => setProgress(p.progress),
+			});
+			for (const asset of processed) {
+				const saved = await editor.media.addMediaAsset({
+					projectId: activeProject.metadata.id,
+					asset,
+				});
+				if (!saved) continue;
+				const duration =
+					saved.duration != null
+						? Math.round(saved.duration * TICKS_PER_SECOND)
+						: DEFAULT_NEW_ELEMENT_DURATION;
+				editor.timeline.insertElement({
+					element: buildElementFromMedia({
+						mediaId: saved.id,
+						mediaType: saved.type,
+						name: saved.name,
+						duration,
+						startTime: 0,
+					}),
+					placement: { mode: "auto" },
+				});
+			}
+		} catch (e) {
+			console.error("importAndPlace failed", e);
+		} finally {
+			setIsProcessing(false);
+			setProgress(0);
+		}
+	};
+
 
 	const { isDragOver, dragProps, openFilePicker, fileInputProps } =
 		useFileUpload({
@@ -207,7 +247,7 @@ export function MediaView() {
 				contentClassName="h-full"
 				{...dragProps}
 			>
-				<MusaImportPanel onImport={(files) => processFiles({ files })} />
+				<MusaImportPanel onImport={(files) => importAndPlace({ files })} />
 				{isDragOver || filteredMediaItems.length === 0 ? (
 					<MediaDragOverlay
 						isVisible={true}
