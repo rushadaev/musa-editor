@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { fetchMusaAssets, musaAssetToFile, type MusaAsset } from "@/lib/musa/import";
+import { fetchMusaAssets, musaAssetToFile, musaUrl, type MusaAsset } from "@/lib/musa/import";
 
 /**
  * Browse the user's Musa generations as lightweight thumbnails (loaded by URL,
@@ -58,8 +58,8 @@ export function MusaImportPanel({ onImport }: { onImport: (files: File[]) => Pro
 						title={a.name}
 						className="relative rounded-md overflow-hidden bg-secondary border border-border hover:border-primary transition disabled:opacity-50 aspect-square"
 					>
-						{a.kind === "image" && <img src={a.url} alt="" loading="lazy" className="w-full h-full object-cover" />}
-						{a.kind === "video" && <video src={`${a.url}#t=0.1`} preload="metadata" muted className="w-full h-full object-cover" />}
+						{a.kind === "image" && <img src={musaUrl(a.url)} alt="" loading="lazy" className="w-full h-full object-cover" />}
+						{a.kind === "video" && <video src={`${musaUrl(a.url)}#t=0.1`} preload="metadata" muted className="w-full h-full object-cover" />}
 						{a.kind === "audio" && <span className="flex h-full items-center justify-center text-lg">🎵</span>}
 						{busy.has(a.id) && <span className="absolute inset-0 flex items-center justify-center bg-black/50 text-[10px] text-white">…</span>}
 					</button>
