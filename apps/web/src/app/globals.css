@@ -289,3 +289,32 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* ===== Musa / Tokyo Night theme override (embedded editor) ===== */
+:root, .dark {
+  --background: hsl(229 23% 13%);
+  --foreground: hsl(229 76% 86%);
+  --card: hsl(229 24% 19%);
+  --card-foreground: hsl(229 76% 86%);
+  --popover: hsl(229 24% 19%);
+  --popover-hover: hsl(232 24% 22%);
+  --popover-foreground: hsl(229 76% 86%);
+  --primary: hsl(261 84% 78%);
+  --primary-foreground: hsl(229 23% 13%);
+  --secondary: hsl(229 24% 19%);
+  --secondary-border: hsl(232 24% 22%);
+  --secondary-foreground: hsl(229 76% 86%);
+  --muted: hsl(229 24% 19%);
+  --muted-foreground: hsl(229 18% 47%);
+  --accent: hsl(232 24% 22%);
+  --accent-foreground: hsl(229 76% 86%);
+  --border: hsl(232 24% 22%);
+  --input: hsl(229 24% 19%);
+  --ring: hsl(221 89% 72%);
+  --sidebar: hsl(229 23% 11%);
+  --sidebar-background: hsl(229 23% 11%);
+  --sidebar-foreground: hsl(229 76% 86%);
+  --sidebar-accent: hsl(232 24% 22%);
+  --sidebar-accent-foreground: hsl(229 76% 86%);
+  --sidebar-border: hsl(232 24% 22%);
+}
