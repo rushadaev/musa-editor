@@ -117,12 +117,20 @@ export function MediaView() {
 	};
 
 	const importFromMusa = async () => {
-		const musaAssets = await fetchMusaAssets();
-		if (!musaAssets.length) {
-			toast.error("Нет материалов в Музе (или нужно войти)");
+		const res = await fetchMusaAssets();
+		if (!res.ok) {
+			toast.error(
+				res.status === 401
+					? "Войдите в Музу (musa-chat.com), затем обновите редактор"
+					: `Не удалось получить материалы (${res.error || res.status})`,
+			);
 			return;
 		}
-		const files = await Promise.all(musaAssets.map(musaAssetToFile));
+		if (!res.assets.length) {
+			toast.error("В Музе нет готовых работ для импорта");
+			return;
+		}
+		const files = await Promise.all(res.assets.map(musaAssetToFile));
 		await processFiles({ files });
 	};
 

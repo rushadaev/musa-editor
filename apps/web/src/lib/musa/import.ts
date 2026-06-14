@@ -5,15 +5,17 @@
 const MUSA = process.env.NEXT_PUBLIC_MUSA_API || "";
 
 export type MusaAsset = { id: string; kind: "video" | "image" | "audio"; url: string; name: string };
+export type MusaFetch = { ok: boolean; status: number; assets: MusaAsset[]; error?: string };
 
-export async function fetchMusaAssets(): Promise<MusaAsset[]> {
-  if (!MUSA) return [];
+export async function fetchMusaAssets(): Promise<MusaFetch> {
+  if (!MUSA) return { ok: false, status: 0, assets: [], error: "NEXT_PUBLIC_MUSA_API not set" };
   try {
     const r = await fetch(`${MUSA}/api/editor/assets`, { credentials: "include" });
-    if (!r.ok) return [];
-    return (await r.json()).assets ?? [];
-  } catch {
-    return [];
+    if (!r.ok) return { ok: false, status: r.status, assets: [], error: `HTTP ${r.status}` };
+    const data = await r.json();
+    return { ok: true, status: 200, assets: data.assets ?? [] };
+  } catch (e) {
+    return { ok: false, status: -1, assets: [], error: e instanceof Error ? e.message : "network error" };
   }
 }
 
