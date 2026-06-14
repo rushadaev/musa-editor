@@ -31,6 +31,7 @@ import { useEditor } from "@/hooks/use-editor";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { invokeAction } from "@/lib/actions";
 import { processMediaAssets } from "@/lib/media/processing";
+import { fetchMusaAssets, musaAssetToFile } from "@/lib/musa/import";
 import { showMediaUploadToast } from "@/lib/media/upload-toast";
 import {
 	SelectableItem,
@@ -113,6 +114,16 @@ export function MediaView() {
 			setIsProcessing(false);
 			setProgress(0);
 		}
+	};
+
+	const importFromMusa = async () => {
+		const musaAssets = await fetchMusaAssets();
+		if (!musaAssets.length) {
+			toast.error("Нет материалов в Музе (или нужно войти)");
+			return;
+		}
+		const files = await Promise.all(musaAssets.map(musaAssetToFile));
+		await processFiles({ files });
 	};
 
 	const { isDragOver, dragProps, openFilePicker, fileInputProps } =
@@ -205,6 +216,17 @@ export function MediaView() {
 				contentClassName="h-full"
 				{...dragProps}
 			>
+				<div className="px-3 pt-2">
+					<Button
+						variant="outline"
+						size="sm"
+						className="w-full"
+						disabled={isProcessing}
+						onClick={importFromMusa}
+					>
+						Импорт из Музы
+					</Button>
+				</div>
 				{isDragOver || filteredMediaItems.length === 0 ? (
 					<MediaDragOverlay
 						isVisible={true}

@@ -34,6 +34,8 @@ import {
 } from "@/components/section";
 import { useEditor } from "@/hooks/use-editor";
 import { DEFAULT_EXPORT_OPTIONS } from "@/lib/export/defaults";
+import { saveToMusa } from "@/lib/musa/export";
+import { toast } from "sonner";
 
 function isExportFormat(value: string): value is ExportFormat {
 	return EXPORT_FORMAT_VALUES.some((formatValue) => formatValue === value);
@@ -134,6 +136,18 @@ function ExportPopover({
 				filename: `${activeProject.metadata.name}${getExportFileExtension({ format })}`,
 				mimeType: getExportMimeType({ format }),
 			});
+
+			// Also save the render back to Musa (appears in Мастерская).
+			try {
+				await saveToMusa(
+					result.buffer,
+					activeProject.metadata.name,
+					getExportMimeType({ format }),
+				);
+				toast.success("Сохранено в Музу");
+			} catch {
+				toast.error("Не удалось сохранить в Музу");
+			}
 
 			editor.project.clearExportState();
 			onOpenChange(false);
