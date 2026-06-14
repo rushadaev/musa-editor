@@ -31,7 +31,7 @@ import { useEditor } from "@/hooks/use-editor";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { invokeAction } from "@/lib/actions";
 import { processMediaAssets } from "@/lib/media/processing";
-import { fetchMusaAssets, musaAssetToFile } from "@/lib/musa/import";
+import { MusaImportPanel } from "@/components/musa/import-panel";
 import { showMediaUploadToast } from "@/lib/media/upload-toast";
 import {
 	SelectableItem,
@@ -116,23 +116,6 @@ export function MediaView() {
 		}
 	};
 
-	const importFromMusa = async () => {
-		const res = await fetchMusaAssets();
-		if (!res.ok) {
-			toast.error(
-				res.status === 401
-					? "Войдите в Музу (musa-chat.com), затем обновите редактор"
-					: `Не удалось получить материалы (${res.error || res.status})`,
-			);
-			return;
-		}
-		if (!res.assets.length) {
-			toast.error("В Музе нет готовых работ для импорта");
-			return;
-		}
-		const files = await Promise.all(res.assets.map(musaAssetToFile));
-		await processFiles({ files });
-	};
 
 	const { isDragOver, dragProps, openFilePicker, fileInputProps } =
 		useFileUpload({
@@ -224,17 +207,7 @@ export function MediaView() {
 				contentClassName="h-full"
 				{...dragProps}
 			>
-				<div className="px-3 pt-2">
-					<Button
-						variant="outline"
-						size="sm"
-						className="w-full"
-						disabled={isProcessing}
-						onClick={importFromMusa}
-					>
-						Импорт из Музы
-					</Button>
-				</div>
+				<MusaImportPanel onImport={(files) => processFiles({ files })} />
 				{isDragOver || filteredMediaItems.length === 0 ? (
 					<MediaDragOverlay
 						isVisible={true}
